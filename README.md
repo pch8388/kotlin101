@@ -10,15 +10,35 @@
 var n: Int = 1
 var p: Double = 1.2
 
+// Int
 var n = 1
+// Double
 var p = 1.2
+// Float
+var p = 1.2f
+// Long
+var n = 1L
 ```
 
-- Int
-- Double
-- Boolean
-- String
-- Char
+### Numbers
+
+Integer types
+
+| Type  | Size(bits) | Min value | Max value |
+|-------|------------|-----------|-----------|
+| Byte  | 8          | -128      | 127       |
+| Short | 16         | -32768    | 32767     |
+| Int   | 32         | -2^31     | 2^31-1    |
+| Long  | 64         | -2^63     | 2^63-1    |
+
+Floating-point types
+
+| Type   | Size(bits) | Significant bits | Exponent bits | Decimal digits |
+|--------|------------|-----------------|---------------|----------------|
+| Float  | 32         | 24              | 8             | 6-7            |
+| Double | 64         | 53              | 11            | 15-16          |
+
+
 
 > raw string : """string""" 과 같이 멀티라인 string 사용
 
@@ -86,4 +106,59 @@ fun oneOrTheOther(exp: Boolean): String =
         "True"
     else
         "False"
+```
+
+## when
+- switch 의 역할
+- 나중에 예제 더 추가
+```kotlin
+val numbers = mapOf(
+    1 to "eins", 2 to "zwei", 3 to "drei",
+    4 to "vier", 5 to "fuenf", 6 to "sechs",
+    7 to "sieben", 8 to "acht", 9 to "neun",
+    10 to "zehn", 11 to "elf", 12 to "zwoelf"
+)
+
+fun ordinal(i: Int): String =
+    when (i) {
+        1 -> "erste"
+        3 -> "dritte"
+        7 -> "siebte"
+        8 -> "achte"
+        20 -> "zwanzigste"
+        else -> numbers.getValue(i) + "te"
+    }
+fun main() {
+    println(ordinal(2) == "zweite")
+    println(ordinal(3) == "dritte")
+    println(ordinal(11) == "elfte")
+}
+```
+
+## 문자열 템플릿
+```kotlin
+// $ 로 대입
+val answer = 42
+println("Found $answer!")
+// $1 은 찾을 수 없는 변수라서 그대로 출력됨
+println("printing a $1")
+
+// \n으로 new line 표현
+val s = "hi\n"
+val n = 11
+val d = 3.14
+println("first: " + s + "second : " + n + " third: " + d)
+
+// {} 안에 식을 넣을 수 있음
+val condition = true
+println("${if (condition) 'a' else 'b'}")
+
+// $x + 4 => 11 + 4 , ${x+4} => 15
+val x = 11
+println("$x + 4 = ${x + 4}")
+
+// escape 역슬래쉬(\)
+val k = "value"
+println("k = \"$k\".")
+println("""k = "$k".""")
 ```
