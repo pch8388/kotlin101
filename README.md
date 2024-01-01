@@ -39,8 +39,93 @@ Floating-point types
 | Double | 64         | 53              | 11            | 15-16          |
 
 
+언더스코어를 통해 가독성 향상
 
-> raw string : """string""" 과 같이 멀티라인 string 사용
+```kotlin
+// Int
+val oneMillion = 1_000_000
+// Long
+val creditCardNumber = 1234_5678_9012_3456L
+// Long
+val socialSecurityNumber = 999_99_9999L
+// Hexadecimals
+val hexBytes = 0xFF_EC_DE_5E
+// Binaries
+val bytes = 0b11010010_01101001_10010100_10010010
+```
+
+JVM 에서 number 표현 <br>
+JVM 플랫폼에서는 int / double 과 같은 것을 primitive 타입으로 저장한다.<br>
+nullable reference 로 저장하는 경우에는 boxing 된 타입으로 저장함
+
+```kotlin
+val a: Int = 100
+val boxedA: Int? = a
+val anotherBoxedA: Int? = a
+
+val b: Int = 10000
+val boxedB: Int? = b
+val anotherBoxedB: Int? = b
+
+// Referential equality
+println(boxedA === anotherBoxedA) // true
+println(boxedB === anotherBoxedB) // false
+// Structural equality (equals())
+println(boxedB == anotherBoxedB) // true
+```
+
+> 위와 같이 나오는 이유는 둘 다 boxing 된 타입이지만, JVM 이 -128 ~ 127 에 해당하는 Integer 는 메모리 최적화를 위해 항상 같은 reference 를 반환한다 <br>
+> 아래에서 보는 것과 같이 결국 java/lang/Integer.valueOf 를 사용하기 때문에 이와 같이 수행된다
+
+<img width="700" alt="kotlin int boxing" src="https://github.com/pch8388/kotlin101/assets/17218212/37a3c308-556c-449d-9e29-738a210a9b86">
+
+### Unsigned integer types
+
+| Type   | Size(bits) | Min value | Max value |
+|--------|------------|-----------|-----------|
+| UByte  | 8          | 0         | 255       |
+| UShort | 16         | 0         | 65535     |
+| UInt   | 32         | 0         | 2^32-1    |
+| ULong  | 64         | 0         | 2^64-1    |
+
+> 비즈니스 로직 등에서 쓰기보다는 array 의 index 범위 등에 쓰기에 좋음
+> 
+> 
+
+### Boolean
+자바 동일
+
+### Char
+자바와 동일한데, 코틀린 특성상 nullable 하게 정의하면 boxing 타입을 쓰는듯
+
+### 문자열 템플릿
+```kotlin
+// $ 로 대입
+val answer = 42
+println("Found $answer!")
+// $1 은 찾을 수 없는 변수라서 그대로 출력됨
+println("printing a $1")
+
+// \n으로 new line 표현
+val s = "hi\n"
+val n = 11
+val d = 3.14
+println("first: " + s + "second : " + n + " third: " + d)
+
+// {} 안에 식을 넣을 수 있음
+val condition = true
+println("${if (condition) 'a' else 'b'}")
+
+// $x + 4 => 11 + 4 , ${x+4} => 15
+val x = 11
+println("$x + 4 = ${x + 4}")
+
+// escape 역슬래쉬(\)
+val k = "value"
+println("k = \"$k\".")
+// raw string : `"""string"""` 과 같이 멀티라인 string 사용
+println("""k = "$k".""")
+```
 
 ```kotlin
 // Double 로 타입추론 해준다
@@ -133,32 +218,4 @@ fun main() {
     println(ordinal(3) == "dritte")
     println(ordinal(11) == "elfte")
 }
-```
-
-## 문자열 템플릿
-```kotlin
-// $ 로 대입
-val answer = 42
-println("Found $answer!")
-// $1 은 찾을 수 없는 변수라서 그대로 출력됨
-println("printing a $1")
-
-// \n으로 new line 표현
-val s = "hi\n"
-val n = 11
-val d = 3.14
-println("first: " + s + "second : " + n + " third: " + d)
-
-// {} 안에 식을 넣을 수 있음
-val condition = true
-println("${if (condition) 'a' else 'b'}")
-
-// $x + 4 => 11 + 4 , ${x+4} => 15
-val x = 11
-println("$x + 4 = ${x + 4}")
-
-// escape 역슬래쉬(\)
-val k = "value"
-println("k = \"$k\".")
-println("""k = "$k".""")
 ```
