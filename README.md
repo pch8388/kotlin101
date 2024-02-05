@@ -89,8 +89,6 @@ println(boxedB == anotherBoxedB) // true
 | ULong  | 64         | 0         | 2^64-1    |
 
 > 비즈니스 로직 등에서 쓰기보다는 array 의 index 범위 등에 쓰기에 좋음
-> 
-> 
 
 ### Boolean
 자바 동일
@@ -262,3 +260,46 @@ print((1..10 step 2).map { it + 2 })
 > map { it + 2 } 혹은 map { itx -> itx + 2 }
 
 [람다 싱글 파라미터](https://kotlinlang.org/docs/lambdas.html#it-implicit-name-of-a-single-parameter)
+
+## while loop
+- java 랑 동일함
+
+## Data class
+```kotlin
+data class User(val name: String, val age: Int)
+```
+- 간단한 선언으로 Data 를 담는 역할을 하는 클래스를 만들 수 있다(document 에 DTO 클래스 생성이라고 표현)
+- data class 를 추가하면 자동으로 제공하는 함수가 있다
+  - `getter` (변수를 var로 만들면 setter 도 제공) => getXX() 형태가 아닌 instance.name 과 같은 형태로 사용함
+  - `equals` / `hashCode`
+  - `toString`
+  - `copy` : deep copy
+  - `componentN` : 실제로 직접 사용할 일은 없지만 destructuring declarations(구조분해선언)을 위해 선언
+
+### destructuring declarations
+```kotlin
+data class Person(val name: String, val age: Int)
+
+val person = Person("Kwon", 20)
+
+val (name, age) = person
+print("name : $name, age : $age")
+
+// 구조분해선언은 compile 될 때 아래와 같이 된다고 함 
+// 선언을 보면 알 수 변수의 네이밍과는 관계 없이 순서에 영향을 받는다. 즉, val (age, name) = person 이라고 했어도, age에 name이 할당됨
+val name = person.component1()
+val age = person.component2()
+
+// loop 에서도 사용가능
+for ((name, age) in persons) print("name : $name, age : $age")
+
+// function 의 결과를 받는 것도 가능
+fun destFunction(name:String, age:Int): Person {
+  return Person(name, age)
+}
+val (funName, funAge) = destFunction("Park", 40)
+println("name : $funName, age : $funAge")
+
+// underscore 를 통해 생략도 가능
+val (_, funAge2) = destFunction("UnderScore", 42)
+```
