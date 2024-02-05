@@ -219,3 +219,46 @@ fun main() {
     println(ordinal(11) == "elfte")
 }
 ```
+
+## for loop
+```kotlin
+// foreach 와 같이 collection 을 모두 순회
+val items = listOf("apple", "banana", "kiwifruit")
+for (item in items) {
+    println(item)
+}
+
+// indices : collection 의 시작인덱스~끝 인덱스를 나타냄
+val items = listOf("apple", "banana", "kiwifruit")
+for (index in items.indices) {
+    println("item at $index is ${items[index]}")
+}
+
+// 1~4 까지 순회 (.. => rangeTo())
+for (i in 1..4) print(i)
+
+// 1~3 까지 순회 (..< => rangeUntil())
+for (i in 1..<4) print(i)
+
+// 4에서 1까지 순회 => 4321
+for (i in 4 downTo 1) print(i)
+
+// 0~8 까지 +2 씩 증가 => 02468
+for (i in 0..8 step 2) print(i)
+
+// 0~7 까지 +2 씩 증가 => 0246
+for (i in 0..<8 step 2) print(i)
+
+// 8~0 까지 -2 씩 감소 => 86420
+for (i in 8 downTo 0 step 2) print(i)
+
+// 이련형태도 됨.. [2, 4, 6, 8, 10]
+println((1..10).filter { it % 2 == 0 })
+// [3, 5, 7, 9, 11]
+print((1..10 step 2).map { it + 2 })
+```
+
+> 람다 쓸 때, 파라미터가 한개인 경우 생략할 수 있다. 대신, 변수 이름을 it 로 써야함
+> map { it + 2 } 혹은 map { itx -> itx + 2 }
+
+[람다 싱글 파라미터](https://kotlinlang.org/docs/lambdas.html#it-implicit-name-of-a-single-parameter)
