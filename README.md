@@ -275,6 +275,9 @@ data class User(val name: String, val age: Int)
   - `toString`
   - `copy` : deep copy
   - `componentN` : 실제로 직접 사용할 일은 없지만 destructuring declarations(구조분해선언)을 위해 선언
+- abstract, open, sealed, inner 로 사용 불가
+- 생성자에 반드시 하나이상의 파라미터 필요
+  - 생성자 파라미터에 반드시 val / var 선언 필요
 
 ### destructuring declarations
 ```kotlin
