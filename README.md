@@ -266,7 +266,7 @@ print((1..10 step 2).map { it + 2 })
 
 ## Data class
 ```kotlin
-data class User(val name: String, val age: Int)
+data class Person(val name: String, val age: Int)
 ```
 - 간단한 선언으로 Data 를 담는 역할을 하는 클래스를 만들 수 있다(document 에 DTO 클래스 생성이라고 표현)
 - data class 를 추가하면 자동으로 제공하는 함수가 있다
@@ -274,10 +274,34 @@ data class User(val name: String, val age: Int)
   - `equals` / `hashCode`
   - `toString`
   - `copy` : deep copy
+  ```kotlin
+  val jack = User(name = "Jack", age = 1)
+  val olderJack = jack.copy(age = 2)
+  ```
   - `componentN` : 실제로 직접 사용할 일은 없지만 destructuring declarations(구조분해선언)을 위해 선언
+  - `equals` / `hashCode` / `toString` 은 명시적으로 사용자가 구현하면 그것을 쓰지만 `copy` 나 `componentN` 은 불가능함
 - abstract, open, sealed, inner 로 사용 불가
 - 생성자에 반드시 하나이상의 파라미터 필요
   - 생성자 파라미터에 반드시 val / var 선언 필요
+- 클래스 내부에 따로 변수 선언을 해도 되지만, 자동 생성 함수들은 해당 변수를 무시하고 생성됨
+  - 즉, 아래와 같은 구문이 성립된다
+  ```kotlin
+  data class Person(val name: String) {
+    var age: Int = 0
+  }
+  
+  val person1 = Person("John")
+  val person2 = Person("John")
+  person1.age = 10
+  person1.age = 20
+  
+  // true
+  println("person1 == person2: ${person1 == person2}")
+  // 10
+  println("person1 age: ${person1.age}")
+  // 20
+  println("person2 age: ${person2.age}")
+  ```
 
 ### destructuring declarations
 ```kotlin
