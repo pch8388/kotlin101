@@ -293,7 +293,7 @@ data class Person(val name: String, val age: Int)
   val person1 = Person("John")
   val person2 = Person("John")
   person1.age = 10
-  person1.age = 20
+  person2.age = 20
   
   // true
   println("person1 == person2: ${person1 == person2}")
