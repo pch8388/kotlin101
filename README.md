@@ -338,9 +338,17 @@ class Empty
 ```
 이런 문법도 가능하다... 
 
+클래스는 다음의 요소를 가질 수 있다
+- Constructor / initializer block
+- Functions
+- Properties
+- Nested and inner classes
+- Object declarations
+
 ### 생성자
-기본 생성자를 클래스 헤더에 생성할 수 있다.
-추가로도 생성가능함
+- 기본 생성자를 클래스 헤더에 생성할 수 있다.
+- 추가로도 생성가능함
+- kotlin 은 객체 생성시에 new 키워드가 없음
 ```kotlin
 class Person constructor(fistName: String)
 
@@ -378,7 +386,7 @@ class InitOrderDemo(name: String) {
 }
 ```
 
-클래스 헤더에 바로 정의하는 기본 생성자에서는 property 에 대한 정의가 가능하다
+클래스 헤더에 바로 정의하는 기본 생성자(primary constructor)에서는 property 에 대한 정의가 가능하다
 ```kotlin
 class Person(val firstName: String, val lastName: String, var age: Int)
 
@@ -418,5 +426,61 @@ class Person(val name: String) {
     constructor(name: String, parent: Person) : this(name) {
         parent.children.add(this)
     }
+}
+````
+
+- 생성자가 없다면 자바처럼 인자가 없는 기본 생성자는 만들어 준다
+- 클래스 헤더에 선언하지 않고 constructor 로 선언하는 경우에는 자바와 같은 룰을 가져간다. 즉, 다른 생성자를 꼭 호출하지 않아도 됨
+- 클래스 헤더에 선언된 생성자는 primary constructor 로 반드시 호출해야 함
+- init block 은 primary constructor 가 없더라도 작동한다.
+  - 재미있는 점은 init block 의 위치와 상관없이 모두 수행된 후 constructor 가 수행된다 
+  - primary constructor 가 있는 경우에는 위치에 따라 수행 순서가 달라짐 
+    - 컴파일하면 코드를 끼워넣어준다. 아래와 같이 primary constructor 가 없다면 init block 을 먼저 다 수행하도록 컴파일된다 
+```kotlin
+class Constructors {
+    init {
+        println("Constructors : Init block")
+    }
+
+    constructor(i: Int) {
+        println("Constructor Int : $i")
+    }
+
+    constructor(s: String) {
+        println("Constructor string : $s")
+    }
+}
+
+class DefaultConstructors {
+    init {
+        println("DefaultConstructors : Init block")
+    }
+}
+```
+
+primary constructor 가 있는 경우를 보면 코드의 위치에 따라 컴파일 시점에 코드를 배치해주는 것을 볼 수 있다
+
+```kotlin
+class PrimaryConstructors(val name: String) {
+    val upperName = name.uppercase()
+    
+    init {
+        println("Constructors : Init block")
+    }
+}
+```
+````
+public final class PrimaryConstructors {
+   public PrimaryConstructors(@NotNull String name) {
+      Intrinsics.checkNotNullParameter(name, "name");
+      super();
+      this.name = name;
+      String var2 = this.name;
+      String var10001 = var2.toUpperCase(Locale.ROOT);
+      Intrinsics.checkNotNullExpressionValue(var10001, "this as java.lang.String).toUpperCase(Locale.ROOT)");
+      this.upperName = var10001;
+      var2 = "Constructors : Init block";
+      System.out.println(var2);
+   }
 }
 ````
