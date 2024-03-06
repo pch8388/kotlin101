@@ -330,3 +330,93 @@ println("name : $funName, age : $funAge")
 // underscore 를 통해 생략도 가능
 val (_, funAge2) = destFunction("UnderScore", 42)
 ```
+
+## Classes
+class 키워드로 class 를 선언한다
+```kotlin
+class Empty
+```
+이런 문법도 가능하다... 
+
+### 생성자
+기본 생성자를 클래스 헤더에 생성할 수 있다.
+추가로도 생성가능함
+```kotlin
+class Person constructor(fistName: String)
+
+class Person(fistName: String)
+```
+
+속성 initialize 혹은 initialize block 을 사용할 수 있다
+```kotlin
+// 속성 initialize
+class Customer(name: String) {
+    val customerKey = name.uppercase()
+}
+
+// initialize block
+class Customer(name: String) {
+    var customerKey
+    init {
+        customerKey = name.lowercase()
+    }
+}
+
+// 두개를 섞어쓰면, 순서대로 수행된다
+class InitOrderDemo(name: String) {
+  val firstProperty = "First property: $name".also(::println)
+
+  init {
+    println("First initializer block that prints $name")
+  }
+
+  val secondProperty = "Second property: ${name.length}".also(::println)
+
+  init {
+    println("Second initializer block that prints ${name.length}")
+  }
+}
+```
+
+클래스 헤더에 바로 정의하는 기본 생성자에서는 property 에 대한 정의가 가능하다
+```kotlin
+class Person(val firstName: String, val lastName: String, var age: Int)
+
+// 기본값 설정도 가능
+class Person(val firstName: String, val lastName: String, var isEmployed: Boolean = true)
+```
+
+trailing comma 도 지원 (생성자에서 할 얘기가 맞는지는 모르겠으나..)
+```kotlin
+class Person(
+    val firstName: String,
+    val lastName: String,
+    var age: Int, // trailing comma
+) { /*...*/ }
+```
+
+생성자에 특별히 가시성을 제어하거나 어노테이션을 붙이려면 constructor 키워드 앞에 붙이면 됨
+```kotlin
+class Customer private @Inject constructor(name: String) { /*...*/ }
+```
+
+기본 생성자가 아닌 생성자도 추가할 수 있다
+```kotlin
+class Person(val pets: MutableList<Pet> = mutableListOf())
+
+class Pet {
+  constructor(owner: Person) {
+    owner.pets.add(this) // adds this pet to the list of its owner's pets
+  }
+}
+```
+
+기본 생성자가 있고, 보조 생성자를 만들려고 하면, this 를 통해 기본 생성자를 호출해주어야 함
+````kotlin
+class Person(val name: String) {
+    val children: MutableList<Person> = mutableListOf()
+    constructor(name: String, parent: Person) : this(name) {
+        parent.children.add(this)
+    }
+}
+````
