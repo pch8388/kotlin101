@@ -469,7 +469,7 @@ class PrimaryConstructors(val name: String) {
     }
 }
 ```
-````
+`
 public final class PrimaryConstructors {
    public PrimaryConstructors(@NotNull String name) {
       Intrinsics.checkNotNullParameter(name, "name");
@@ -482,5 +482,182 @@ public final class PrimaryConstructors {
       var2 = "Constructors : Init block";
       System.out.println(var2);
    }
+}
+`
+
+## Inheritance
+- 지정하지 않으면 `Any` 타입을 슈퍼클래스로 가진다
+- `Any` 클래스는 `equals / hashcode / toString` 메서드를 가진다
+
+
+### 상속
+```kotlin
+// 명시적 슈퍼클래스를 가지려면 콜론(:) 뒤에 선언한다
+open class Base(p: Int)
+
+// primary 생성자를 선언하면 선언부에서 super class 생성자도 호출해주어야 함
+class Derived(p: Int) : Base(p)
+
+// primary 생성자를 쓰지 않고 슈퍼클래스에 인자가 있는 생성자가 있다면 명시적으로 호출해주어야 한다
+class BaseChild: Base {
+    constructor(p: Int) : super(p)
+    constructor(p: Int, s: String) : super(p)
+}
+
+open class Parent
+
+// 부모클래스에 default 생성자만 있다면 명시적으로 호출하지 않아도 되는 듯..
+class Child : Parent {
+    private var age: Int = 0
+
+    constructor(age: Int) {
+        this.age = age
+    }
+
+    constructor(s: String)
+}
+```
+
+### Method Override
+````kotlin
+// 상속을 허용하려면 open 키워드를 쓴다
+// class 가 open 이어도 fill 과 같이 open method 가 아니면 오버라이드가 불가능하다
+open class Shape {
+    open fun draw() { /*...*/ }
+    fun fill() { /*...*/ }
+}
+
+open class Circle() : Shape() {
+    override fun draw() { /*...*/ }
+}
+
+open class Circle2() : Circle() {
+    // 여러번 오버라이드도 가능
+    override fun draw() { /*...*/ }
+}
+
+open class Rectangle() : Shape() {
+    // final 로 선언하면 더이상 오버라이드를 허용하지 않음
+    final override fun draw() { /*...*/ }
+}
+````
+
+### Property Override
+프로퍼티도 똑같이 오버라이드 가능
+````kotlin
+open class Shape {
+    open val vertexCount: Int = 0
+}
+
+class Rectangle : Shape() {
+    override val vertexCount = 4
+}
+
+// val -> var 는 되지만 var -> val 은 안됨
+// val -> var 일때는 하위클래스에서 set 을 재정의하지만 반대는 불가능하기 때문(가능한 경우 리스코프 치환원칙에도 어긋남)
+open class Shape2 {
+    open val vertexCount: Int = 0
+}
+
+class Rectangle2 : Shape2() {
+    override var vertexCount = 4
+}
+````
+
+### 하위 클래스의 초기화 순서
+1. 슈퍼클래스의 생성자 초기화
+2. 서브클래스의 생성자 초기화
+
+> 이때, 생성자 초기화는 생성자 설명때 언급했던 것과 같이, primary constructor 라면 순서대로 수행하고, 아니라면, init block -> constructor 의 순서로 수행한다
+> 슈퍼클래스의 생성자를 초기화하기 위해 호출하는 name.replaceFirstChar 구문이 제일 먼저 호출된다.
+````kotlin
+open class Base(val name: String) {
+
+    init { println("Initializing a base class") }
+
+    open val size: Int =
+        name.length.also { println("Initializing size in the base class: $it") }
+}
+
+class Derived(
+    name: String,
+    val lastName: String,
+) : Base(name.replaceFirstChar { it.uppercase() }.also { println("Argument for the base class: $it") }) {
+
+    init { println("Initializing a derived class") }
+
+    override val size: Int =
+        (super.size + lastName.length).also { println("Initializing size in the derived class: $it") }
+}
+
+fun main() {
+    println("Constructing the derived class(\"hello\", \"world\")")
+    Derived("hello", "world")
+}
+
+// result 
+//    Constructing the derived class("hello", "world")
+//    Argument for the base class: Hello
+//    Initializing a base class
+//    Initializing size in the base class: 5
+//    Initializing a derived class
+//    Initializing size in the derived class: 10
+````
+
+### 슈퍼클래스 구현 호출
+super 키워드를 통해 상위 클래스 호출
+```kotlin
+open class Rectangle {
+    open fun draw() { println("Drawing a rectangle") }
+    val borderColor: String get() = "black"
+}
+
+class FilledRectangle : Rectangle() {
+    override fun draw() {
+        super.draw()
+        println("Filling the rectangle")
+    }
+
+    val fillColor: String get() = super.borderColor
+}
+```
+
+내부 클래스에서 외부 클래스의 슈퍼클래스를 호출 하는 것은 `super@Outer` 형태로 할 수 있음
+```kotlin
+class FilledRectangle: Rectangle() {
+    override fun draw() {
+        val filler = Filler()
+        filler.drawAndFill()
+    }
+
+    inner class Filler {
+        fun fill() { println("Filling") }
+        fun drawAndFill() {
+            super@FilledRectangle.draw() // Calls Rectangle's implementation of draw()
+            fill()
+            println("Drawn a filled rectangle with color ${super@FilledRectangle.borderColor}") // Uses Rectangle's implementation of borderColor's get()
+        }
+    }
+}
+```
+
+### Overriding rules
+여러 요소로부터 상속받는 경우(클래스 상속은 다중상속이 안되고, 인터페이스)에 같은 시그니처의 메소드가 있다면 반드시 하위 클래스에서 재정의 해야 한다(모호함을 없애기 위해)
+슈퍼클래스를 호출할때는 `<Base>` 와 같은 형태로 어떤 클래스를 호출하는 것인지 명시해야한다
+````kotlin
+open class Rectangle {
+    open fun draw() { /* ... */ }
+}
+
+interface Polygon {
+    fun draw() { /* ... */ } // interface members are 'open' by default
+}
+
+class Square() : Rectangle(), Polygon {
+    // The compiler requires draw() to be overridden:
+    override fun draw() {
+        super<Rectangle>.draw() // call to Rectangle.draw()
+        super<Polygon>.draw() // call to Polygon.draw()
+    }
 }
 ````
